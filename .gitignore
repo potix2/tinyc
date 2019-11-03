@@ -1,0 +1,8 @@
+.vscode
+main
+*.dSYM
+*~
+*.o
+tmp*
+a.out
+tinyc
