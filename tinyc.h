@@ -1,5 +1,9 @@
-#ifndef __TINYC_H
-#define __TINYC_H
+#include <ctype.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 typedef enum {
   TK_RESERVED,  // 記号
@@ -20,37 +24,31 @@ struct Token {
 
 // 抽象構文木のノードの種類
 typedef enum {
-  ND_ADD,  // +
-  ND_SUB,  // -
-  ND_MUL,  // *
-  ND_DIV,  // /
-  ND_NUM,  // 整数
-  ND_EQ,   // ==
-  ND_NEQ,  // !=
-  ND_LT,   // <
-  ND_LTE,  // <=
-  ND_ASSIGN, // =
-  ND_LVAR, // ローカル変数
+  ND_ADD,     // +
+  ND_SUB,     // -
+  ND_MUL,     // *
+  ND_DIV,     // /
+  ND_NUM,     // 整数
+  ND_EQ,      // ==
+  ND_NEQ,     // !=
+  ND_LT,      // <
+  ND_LTE,     // <=
+  ND_ASSIGN,  // =
+  ND_LVAR,    // ローカル変数
 } NodeKind;
 
 typedef struct Node Node;
-struct Node {
+typedef struct Node {
   NodeKind kind;  // ノードの型
   Node *lhs;      // 左辺
   Node *rhs;      // 右辺
   int val;        // kindがND_NUMの場合のみ使う
   int offset;     // kindがND_LVARの場合のみ使う
-};
-
-// 現在着目しているトークン
-extern Token *token;
+} Node;
 
 // 入力プログラム
-extern char *user_input;
 extern Node *code[100];
 
-extern Token *tokenize(char *p);
-extern Node *program();
-extern void gen(Node *node);
-
-#endif
+Token *tokenize(char *p);
+Node *program(Token *in_token);
+void gen(Node *node);

@@ -1,12 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "tinyc.h"
-
-// 現在着目しているトークン
-Token *token;
-
-// 入力プログラム
-char *user_input;
 
 int main(int argc, char **argv) {
   if (argc != 2) {
@@ -15,9 +7,8 @@ int main(int argc, char **argv) {
   }
 
   // トークナイズしてパースする
-  user_input = argv[1];
-  token = tokenize(user_input);
-  program();
+  Token *token = tokenize(argv[1]);
+  program(token);
 
   // アセンブリの前半部分を出力
   printf(".intel_syntax noprefix\n");

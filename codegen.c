@@ -1,20 +1,18 @@
 #include "tinyc.h"
-#include <stdio.h>
-#include <stdlib.h>
 
-void gen_lval(Node *node) {
+static void gen_lval(Node *node) {
   if (node->kind != ND_LVAR) {
     perror("代入の左辺値が変数ではありません");
     exit(-1);
   }
-  
+
   printf("  mov rax, rbp\n");
   printf("  sub rax, %d\n", node->offset);
   printf("  push rax\n");
 }
 
 void gen(Node *node) {
-  switch(node->kind) {
+  switch (node->kind) {
     case ND_NUM:
       printf("  push %d\n", node->val);
       return;
