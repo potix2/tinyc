@@ -1,5 +1,14 @@
 #!/bin/bash
 
+run_embedded_tests() {
+    ./tinyc -test
+    actual="$?"
+    if [ "$actual" != "0" ]; then
+        echo "failed to embedded tests"
+        exit 1
+    fi
+}
+
 try() {
     expected="$1"
     input="$2"
@@ -16,6 +25,9 @@ try() {
         exit 1
     fi
 }
+
+# 組み込みテストを実行
+run_embedded_tests
 
 # try 0 0
 # try 42 42

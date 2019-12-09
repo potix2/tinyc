@@ -5,6 +5,10 @@ int main(int argc, char **argv) {
     fprintf(stderr, "引数の個数が正しくありません\n");
     return 1;
   }
+  if (strncmp(argv[1], "-test", 5) == 0) {
+    run_all_tests();
+    return 0;
+  }
 
   // トークナイズしてパースする
   Token *token = tokenize(argv[1]);

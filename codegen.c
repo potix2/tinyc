@@ -2,8 +2,7 @@
 
 static void gen_lval(Node *node) {
   if (node->kind != ND_LVAR) {
-    perror("代入の左辺値が変数ではありません");
-    exit(-1);
+    error("代入の左辺値が変数ではありません");
   }
 
   printf("  mov rax, rbp\n");

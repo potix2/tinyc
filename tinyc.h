@@ -1,9 +1,35 @@
+#include <assert.h>
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdnoreturn.h>
 #include <string.h>
+
+// error.c
+noreturn void error(char *format, ...);
+
+// util.c
+
+typedef struct Vector {
+  void **data;
+  int capacity;
+  int len;
+} Vector;
+
+Vector *new_vec_with_capacity(int capacity);
+Vector *new_vec(void);
+void vec_push(Vector *v, void *elem);
+void vec_pushi(Vector *v, int val);
+void *vec_pop(Vector *v);
+void *vec_last(Vector *v);
+// bool vec_contains(Vector *v, void *elem);
+// bool vec_union1(Vector *v, void *elem);
+
+void run_all_tests();
+
+// parse.c
 
 typedef enum {
   TK_RESERVED,  // 記号

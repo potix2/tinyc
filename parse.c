@@ -14,8 +14,9 @@ static void error_at(char *loc, char *fmt, ...) {
   fprintf(stderr, "%s\n", user_input);
   fprintf(stderr, "%*s", pos, "");  // pos個の空白を出力
   fprintf(stderr, "^ ");
-  fprintf(stderr, fmt, ap);
+  vfprintf(stderr, fmt, ap);
   fprintf(stderr, "\n");
+  va_end(ap);
   exit(1);
 }
 
