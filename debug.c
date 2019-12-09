@@ -16,6 +16,12 @@ void _dump_token(FILE *stream, Token *t) {
         fprintf(stream, "%.*s", t->len, t->str);
         fprintf(stream, "}\n");
         break;
+      case TK_IF:
+        fprintf(stream, "{kind: TK_IF}\n");
+        break;
+      case TK_ELSE:
+        fprintf(stream, "{kind: TK_ELSE}\n");
+        break;
       case TK_RETURN:
         fprintf(stream, "{kind: TK_RETURN}\n");
         break;

@@ -1,5 +1,12 @@
 #include "tinyc.h"
 
+static int _label_counter = 0;
+static char *gen_label(char *prefix) {
+  char *label = malloc(strlen(prefix) + 6);
+  snprintf(label, strlen(prefix) + 6, ".L%s%04d", prefix, _label_counter++);
+  return label;
+}
+
 static void gen_lval(Node *node) {
   if (node->kind != ND_LVAR) {
     error("代入の左辺値が変数ではありません");
@@ -18,6 +25,23 @@ void gen(Node *node) {
       printf("  mov rsp, rbp\n");
       printf("  pop rbp\n");
       printf("  ret\n");
+      return;
+    case ND_IF:
+      gen(node->cond);
+      printf("  pop rax\n");
+      printf("  cmp rax, 0\n");
+      char *else_label = gen_label("else");
+      char *end_label = gen_label("end");
+      printf("  je %s\n", else_label);
+      gen(node->then);
+      printf("  jmp %s\n", end_label);
+      printf("%s:\n", else_label);
+      if (node->els != NULL) {
+        gen(node->els);
+      } else {
+        printf("  nop\n");
+      }
+      printf("%s:\n", end_label);
       return;
     case ND_NUM:
       printf("  push %d\n", node->val);

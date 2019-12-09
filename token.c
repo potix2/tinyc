@@ -89,6 +89,18 @@ Vector *tokenize(char *p) {
       continue;
     }
 
+    if (strncmp(p, "if", 2) == 0 && !is_alnum(p[2])) {
+      vec_push(tokens, new_token(TK_IF, p, 0));
+      p += 2;
+      continue;
+    }
+
+    if (strncmp(p, "else", 4) == 0 && !is_alnum(p[4])) {
+      vec_push(tokens, new_token(TK_ELSE, p, 0));
+      p += 4;
+      continue;
+    }
+
     if (strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
       vec_push(tokens, new_token(TK_RETURN, p, 0));
       p += 6;

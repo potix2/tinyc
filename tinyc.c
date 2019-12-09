@@ -27,6 +27,7 @@ int main(int argc, char **argv) {
 
   // プロローグ
   // 変数26個分の領域を確保する
+  // TODO: parse結果から確保された変数の数を取得してスタックメモリを確保する
   printf("  push rbp\n");
   printf("  mov rbp, rsp\n");
   printf("  sub rsp, 208\n");

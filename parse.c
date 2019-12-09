@@ -76,6 +76,14 @@ static Node *new_node_num(int val) {
   return node;
 }
 
+static Node *new_if_node(Node *cond, Node *body, Node *alt_body) {
+  Node *node = calloc(1, sizeof(Node));
+  node->kind = ND_IF;
+  node->cond = cond;
+  node->then = body;
+  node->els = alt_body;
+}
+
 static Node *expr();
 
 // primary = num | ident | "(" expr ")"
@@ -190,9 +198,23 @@ static Node *assign() {
 
 static Node *expr() { return assign(); }
 
-// stmt = expr ";" | "return" expr ";"
+// stmt = expr ";"
+// | "if" "(" expr ")" stmt ("else" stmt)?
+// | "return" expr ";"
 static Node *stmt() {
   Node *node;
+
+  if (consume(TK_IF)) {
+    consume('(');
+    Node *cond_expr = expr();
+    consume(')');
+    Node *body = stmt();
+    Node *alt_body = NULL;
+    if (consume(TK_ELSE)) {
+      alt_body = stmt();
+    }
+    return new_if_node(cond_expr, body, alt_body);
+  }
 
   if (consume(TK_RETURN)) {
     node = calloc(1, sizeof(Node));
