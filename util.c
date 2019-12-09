@@ -1,12 +1,12 @@
 #include "tinyc.h"
 
 #ifndef VEC_DEFAULT_CAPACITY
-#define VEC_DEFAULT_CAPACITY 256
+#define VEC_DEFAULT_CAPACITY 16
 #endif
 
 Vector *new_vec_with_capacity(int capacity) {
-  Vector *v = calloc(1, sizeof(Vector));
-  v->data = calloc(capacity, sizeof(void *));
+  Vector *v = malloc(sizeof(Vector));
+  v->data = malloc(sizeof(void *) * capacity);
   v->capacity = capacity;
   v->len = 0;
   return v;
@@ -16,52 +16,30 @@ Vector *new_vec_with_capacity(int capacity) {
   return new_vec_with_capacity(VEC_DEFAULT_CAPACITY);
 }
 
-static void vec_extend_capacity(Vector *v) {
-  void **new_data = calloc(v->capacity * 2, sizeof(void *));
-  memcpy(new_data, v->data, v->capacity * sizeof(void *));
-  free(v->data);
-  v->data = new_data;
-  v->capacity = v->capacity * 2;
-}
-
 void vec_push(Vector *v, void *elem) {
-  if (!v) {
-    error("called vec_push with NULL");
+  assert(v != NULL);
+  if (v->capacity == v->len) {
+    v->capacity *= 2;
+    v->data = realloc(v->data, v->capacity * sizeof(void *));
   }
-  if (v->capacity <= v->len) {
-    vec_extend_capacity(v);
-  }
-  v->data[v->len] = elem;
-  v->len += 1;
+  v->data[v->len++] = elem;
 }
 
 void vec_pushi(Vector *v, int val) {
-  int *elem = calloc(1, sizeof(int));
-  *elem = val;
-  vec_push(v, elem);
+  assert(v != NULL);
+  vec_push(v, (void *)(intptr_t)val);
 }
 
 void *vec_pop(Vector *v) {
-  if (!v) {
-    error("called vec_pop with NULL");
-  }
-  if (v->len == 0) {
-    error("called vec_pop with empty vector");
-  }
-  void *ret = v->data[v->len - 1];
-  v->len -= 1;
-  return ret;
+  assert(v != NULL);
+  assert(!v->len);
+  return v->data[--v->len];
 }
 
 void *vec_last(Vector *v) {
-  if (!v) {
-    error("called vec_pop with NULL");
-  }
-  if (v->len == 0) {
-    error("called vec_pop with empty vector");
-  }
-  void *ret = v->data[v->len - 1];
-  return ret;
+  assert(v != NULL);
+  assert(!v->len);
+  return v->data[v->len - 1];
 }
 
 // bool vec_contains(Vector *v, void *elem) {}
