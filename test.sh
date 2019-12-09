@@ -31,6 +31,7 @@ run_embedded_tests
 
 # try 0 0
 # try 42 42
+try 1 "return 1;"
 try 21 "5+20-4;"
 try 41 " 12 + 34 - 5;"
 try 47 "5+6*7;"
@@ -50,4 +51,6 @@ try 3 " a = 3;"
 try 5 " a = 3; a + 2;"
 try 18 "a = 3; b = 5 * 6; a + b / 2;"
 try 6 " a = b = 3; a+ b;"
+try 5 " return 5; return 8;"
+try 14 "foo = 3; bar = 5 * 6 - 8; return foo + bar / 2;"
 echo OK
