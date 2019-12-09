@@ -11,8 +11,14 @@ int main(int argc, char **argv) {
   }
 
   // トークナイズしてパースする
-  Token *token = tokenize(argv[1]);
-  program(token);
+  Vector *tokens = tokenize(argv[1]);
+#ifdef DEBUG
+  fprintf(stderr, "dump tokens:\n");
+  for (int i = 0; i < tokens->len; i++) {
+    dump_token(tokens->data[i]);
+  }
+#endif
+  program(tokens);
 
   // アセンブリの前半部分を出力
   printf(".intel_syntax noprefix\n");

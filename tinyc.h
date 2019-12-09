@@ -10,6 +10,7 @@
 
 // error.c
 noreturn void error(char *format, ...);
+noreturn void error_at(char *loc, char *fmt, ...);
 
 // util.c
 
@@ -43,7 +44,6 @@ typedef struct Token Token;
 
 struct Token {
   TokenKind kind;  // トークンの型
-  Token *next;     // 次の入力トークン
   int val;         // kindがTK_NUMの場合、その数値
   char *str;       // トークン文字列
   int len;         // トークンの長さ
@@ -76,6 +76,11 @@ typedef struct Node {
 // 入力プログラム
 extern Node *code[100];
 
-Token *tokenize(char *p);
-Node *program(Token *in_token);
+Vector *tokenize(char *p);
+Node *program(Vector *tokens);
 void gen(Node *node);
+
+// debug.c
+#ifdef DEBUG
+void dump_token();
+#endif
