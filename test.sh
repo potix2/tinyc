@@ -56,4 +56,5 @@ try 14 "foo = 3; bar = 5 * 6 - 8; return foo + bar / 2;"
 try 2 "a = 1; if(a == 1) return 2; else return 3;"
 try 3 "a = 0; if(a) return 2; else return 3;"
 try 100 "if(0) return 3; return 100;"
+try 10 "i = 0; while(i < 10) i = i + 1; return i;"
 echo OK

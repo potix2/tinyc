@@ -101,6 +101,11 @@ Vector *tokenize(char *p) {
       continue;
     }
 
+    if (strncmp(p, "while", 5) == 0 && !is_alnum(p[5])) {
+      vec_push(tokens, new_token(TK_WHILE, p, 0));
+      p += 5;
+      continue;
+    }
     if (strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
       vec_push(tokens, new_token(TK_RETURN, p, 0));
       p += 6;

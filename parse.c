@@ -82,8 +82,16 @@ static Node *new_if_node(Node *cond, Node *body, Node *alt_body) {
   node->cond = cond;
   node->then = body;
   node->els = alt_body;
+  return node;
 }
 
+static Node *new_while_node(Node *cond, Node *body) {
+  Node *node = calloc(1, sizeof(Node));
+  node->kind = ND_WHILE;
+  node->cond = cond;
+  node->body = body;
+  return node;
+}
 static Node *expr();
 
 // primary = num | ident | "(" expr ")"
@@ -200,6 +208,7 @@ static Node *expr() { return assign(); }
 
 // stmt = expr ";"
 // | "if" "(" expr ")" stmt ("else" stmt)?
+// | "while" "(" expr ")" stmt
 // | "return" expr ";"
 static Node *stmt() {
   Node *node;
@@ -214,6 +223,13 @@ static Node *stmt() {
       alt_body = stmt();
     }
     return new_if_node(cond_expr, body, alt_body);
+  }
+  if (consume(TK_WHILE)) {
+    consume('(');
+    Node *cond_expr = expr();
+    consume(')');
+    Node *body = stmt();
+    return new_while_node(cond_expr, body);
   }
 
   if (consume(TK_RETURN)) {

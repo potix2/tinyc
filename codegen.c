@@ -18,6 +18,9 @@ static void gen_lval(Node *node) {
 }
 
 void gen(Node *node) {
+  char *l1 = NULL;
+  char *l2 = NULL;
+
   switch (node->kind) {
     case ND_RETURN:
       gen(node->lhs);
@@ -26,26 +29,42 @@ void gen(Node *node) {
       printf("  pop rbp\n");
       printf("  ret\n");
       return;
+
     case ND_IF:
       gen(node->cond);
       printf("  pop rax\n");
       printf("  cmp rax, 0\n");
-      char *else_label = gen_label("else");
-      char *end_label = gen_label("end");
-      printf("  je %s\n", else_label);
+      l1 = gen_label("else");
+      l2 = gen_label("end");
+      printf("  je %s\n", l1);
       gen(node->then);
-      printf("  jmp %s\n", end_label);
-      printf("%s:\n", else_label);
+      printf("  jmp %s\n", l2);
+      printf("%s:\n", l1);
       if (node->els != NULL) {
         gen(node->els);
       } else {
         printf("  nop\n");
       }
-      printf("%s:\n", end_label);
+      printf("%s:\n", l2);
       return;
+
+    case ND_WHILE:
+      l1 = gen_label("begin");
+      l2 = gen_label("end");
+      printf("%s:\n", l1);
+      gen(node->cond);
+      printf("  pop rax\n");
+      printf("  cmp rax, 0\n");
+      printf("  je %s\n", l2);
+      gen(node->body);
+      printf("  jmp %s\n", l1);
+      printf("%s:\n", l2);
+      return;
+
     case ND_NUM:
       printf("  push %d\n", node->val);
       return;
+
     case ND_LVAR:
       gen_lval(node);
       printf("  pop rax\n");

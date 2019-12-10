@@ -44,6 +44,7 @@ typedef enum {
   TK_RETURN,     // returnを表すトークン
   TK_IF,         // if
   TK_ELSE,       // else
+  TK_WHILE,      // while
 } TokenKind;
 
 typedef struct Token Token;
@@ -70,6 +71,7 @@ typedef enum {
   ND_LVAR,       // ローカル変数
   ND_RETURN,     // return
   ND_IF,         // if
+  ND_WHILE,      // while
 } NodeKind;
 
 typedef struct Node Node;
@@ -81,9 +83,11 @@ typedef struct Node {
   int offset;     // kindがND_LVARの場合のみ使う
 
   // if ( cond ) then "else" els
+  // while( cond ) body
   Node *cond;
   Node *then;
   Node *els;
+  Node *body;
 } Node;
 
 typedef struct LVar LVar;
