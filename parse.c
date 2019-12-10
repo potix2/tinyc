@@ -92,6 +92,17 @@ static Node *new_while_node(Node *cond, Node *body) {
   node->body = body;
   return node;
 }
+
+static Node *new_for_node(Node *init, Node *cond, Node *inc, Node *body) {
+  Node *node = calloc(1, sizeof(Node));
+  node->kind = ND_FOR;
+  node->init = init;
+  node->cond = cond;
+  node->inc = inc;
+  node->body = body;
+  return node;
+}
+
 static Node *expr();
 
 // primary = num | ident | "(" expr ")"
@@ -209,6 +220,7 @@ static Node *expr() { return assign(); }
 // stmt = expr ";"
 // | "if" "(" expr ")" stmt ("else" stmt)?
 // | "while" "(" expr ")" stmt
+// | "for" "(" expr? ";" expr? ";" expr? ")" stmt
 // | "return" expr ";"
 static Node *stmt() {
   Node *node;
@@ -230,6 +242,29 @@ static Node *stmt() {
     consume(')');
     Node *body = stmt();
     return new_while_node(cond_expr, body);
+  }
+  if (consume(TK_FOR)) {
+    consume('(');
+
+    Node *init_expr = NULL;
+    if (!consume(';')) {
+      init_expr = expr();
+      consume(';');
+    }
+
+    Node *cond_expr = NULL;
+    if (!consume(';')) {
+      cond_expr = expr();
+      consume(';');
+    }
+
+    Node *inc_expr = NULL;
+    if (!consume(')')) {
+      inc_expr = expr();
+      consume(')');
+    }
+    Node *body = stmt();
+    return new_for_node(init_expr, cond_expr, inc_expr, body);
   }
 
   if (consume(TK_RETURN)) {

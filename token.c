@@ -95,6 +95,12 @@ Vector *tokenize(char *p) {
       continue;
     }
 
+    if (strncmp(p, "for", 3) == 0 && !is_alnum(p[3])) {
+      vec_push(tokens, new_token(TK_FOR, p, 0));
+      p += 3;
+      continue;
+    }
+
     if (strncmp(p, "else", 4) == 0 && !is_alnum(p[4])) {
       vec_push(tokens, new_token(TK_ELSE, p, 0));
       p += 4;

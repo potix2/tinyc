@@ -2,8 +2,8 @@
 
 static int _label_counter = 0;
 static char *gen_label(char *prefix) {
-  char *label = malloc(strlen(prefix) + 6);
-  snprintf(label, strlen(prefix) + 6, ".L%s%04d", prefix, _label_counter++);
+  char *label = malloc(strlen(prefix) + 7);
+  snprintf(label, strlen(prefix) + 7, ".L%s%04d", prefix, _label_counter++);
   return label;
 }
 
@@ -57,6 +57,27 @@ void gen(Node *node) {
       printf("  cmp rax, 0\n");
       printf("  je %s\n", l2);
       gen(node->body);
+      printf("  jmp %s\n", l1);
+      printf("%s:\n", l2);
+      return;
+
+    case ND_FOR:
+      l1 = gen_label("begin");
+      l2 = gen_label("end");
+      if (node->init != NULL) {
+        gen(node->init);
+      }
+      printf("%s:\n", l1);
+      if (node->cond != NULL) {
+        gen(node->cond);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je %s\n", l2);
+      }
+      gen(node->body);
+      if (node->inc != NULL) {
+        gen(node->inc);
+      }
       printf("  jmp %s\n", l1);
       printf("%s:\n", l2);
       return;

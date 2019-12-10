@@ -45,6 +45,7 @@ typedef enum {
   TK_IF,         // if
   TK_ELSE,       // else
   TK_WHILE,      // while
+  TK_FOR,        // for
 } TokenKind;
 
 typedef struct Token Token;
@@ -72,6 +73,7 @@ typedef enum {
   ND_RETURN,     // return
   ND_IF,         // if
   ND_WHILE,      // while
+  ND_FOR,        // for
 } NodeKind;
 
 typedef struct Node Node;
@@ -84,10 +86,13 @@ typedef struct Node {
 
   // if ( cond ) then "else" els
   // while( cond ) body
+  // for ( init; cond; inc ) body
   Node *cond;
   Node *then;
   Node *els;
   Node *body;
+  Node *init;
+  Node *inc;
 } Node;
 
 typedef struct LVar LVar;

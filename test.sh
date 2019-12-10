@@ -57,4 +57,7 @@ try 2 "a = 1; if(a == 1) return 2; else return 3;"
 try 3 "a = 0; if(a) return 2; else return 3;"
 try 100 "if(0) return 3; return 100;"
 try 10 "i = 0; while(i < 10) i = i + 1; return i;"
+try 32 "a = 1; for(b = 0; b < 5; b = b + 1) a = a * 2; return a;"
+try 45 "i = 0; x = 0; for(; i < 10; i = i + 1) x = x + i; return x;"
+try 100 "i = 0; for(;;) if ( i < 10 ) i = i + 1; else return 100;"
 echo OK
