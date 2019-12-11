@@ -30,6 +30,13 @@ static void gen(Node *node) {
       printf("  ret\n");
       return;
 
+    case ND_BLOCK:
+      for( int i = 0; i < node->stmts->len; i++) {
+        gen(node->stmts->data[i]);
+        printf("  pop rax\n");
+      }
+      return;
+
     case ND_IF:
       gen(node->cond);
       printf("  pop rax\n");

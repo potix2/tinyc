@@ -74,6 +74,7 @@ typedef enum {
   ND_IF,         // if
   ND_WHILE,      // while
   ND_FOR,        // for
+  ND_BLOCK,      // { }
 } NodeKind;
 
 typedef struct Node Node;
@@ -93,6 +94,8 @@ typedef struct Node {
   Node *body;
   Node *init;
   Node *inc;
+
+  Vector *stmts;
 } Node;
 
 typedef struct LVar LVar;

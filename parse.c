@@ -220,6 +220,7 @@ static Node *assign() {
 static Node *expr() { return assign(); }
 
 // stmt = expr ";"
+// | "{" stmt* "}"
 // | "if" "(" expr ")" stmt ("else" stmt)?
 // | "while" "(" expr ")" stmt
 // | "for" "(" expr? ";" expr? ";" expr? ")" stmt
@@ -273,10 +274,20 @@ static Node *stmt() {
     node = calloc(1, sizeof(Node));
     node->kind = ND_RETURN;
     node->lhs = expr();
-  } else {
-    node = expr();
+    consume(';');
+    return node;
+  }
+  if (consume('{')) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_BLOCK;
+    node->stmts = new_vec();
+    while(!consume('}'))
+      vec_push(node->stmts, stmt());
+
+    return node;
   }
 
+  node = expr();
   consume(';');
   return node;
 }
