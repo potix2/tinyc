@@ -3,10 +3,11 @@
 Node *code[100];
 char *user_input;
 // 現在着目しているトークン
-Vector *tokens;
-int current;
+static Vector *tokens;
+static int pos;
 // ローカル変数
-Vector *locals;
+static Vector *locals;
+static Program *prog;
 
 // 変数を名前で検索する。見つからなかった場合はNULLを返す。
 static LVar *find_lvar(Token *tok) {
@@ -21,45 +22,45 @@ static LVar *find_lvar(Token *tok) {
 // 次のトークンが期待している記号のときには、トークンを1つ読み進めて
 // 真を返す。それ以外の場合には偽を返す。
 static bool consume(TokenKind kind) {
-  Token *token = tokens->data[current];
+  Token *token = tokens->data[pos];
   if (token->kind != kind) {
     return false;
   }
 #ifdef DEBUG
   fprintf(stderr, "consume: token=%d\n", kind);
 #endif
-  current++;
+  pos++;
   return true;
 }
 
 static Token *consume_ident() {
-  Token *token = tokens->data[current];
+  Token *token = tokens->data[pos];
   if (token->kind != TK_IDENT) {
     return NULL;
   }
 #ifdef DEBUG
   fprintf(stderr, "consume: ident=%.*s\n", token->len, token->str);
 #endif
-  current++;
+  pos++;
   return token;
 }
 
 // 次のトークンが数値の場合、トークンを1つ読み進めてその数値を返す。
 // それ以外の場合にはエラーを報告する。
 static int consume_number() {
-  Token *token = tokens->data[current];
+  Token *token = tokens->data[pos];
   if (token->kind != TK_NUM) {
     error_at(token->str, "数ではありません");
   }
 #ifdef DEBUG
   fprintf(stderr, "consume: number=%d\n", token->val);
 #endif
-  current++;
+  pos++;
   return token->val;
 }
 
 static bool at_eof() {
-  Token *token = tokens->data[current];
+  Token *token = tokens->data[pos];
   return token->kind == TK_EOF;
 }
 
@@ -280,25 +281,31 @@ static Node *stmt() {
   return node;
 }
 
-Node *program(Vector *in) {
-  tokens = in;
-  current = 0;
+static void toplevel() { vec_push(prog->code, stmt()); }
+
+static Program *new_program() {
+  Program *p = malloc(sizeof(Program));
+  p->code = new_vec();
+  p->variables = new_vec();
 
   // TODO: remove dummy variable if it's unnecessary
   // set dummy locals
-  locals = new_vec();
   LVar *dummy = calloc(1, sizeof(LVar));
   dummy->name = "";
   dummy->len = 0;
   dummy->offset = 0;
-  vec_push(locals, dummy);
-
-  int i = 0;
-  while (!at_eof()) code[i++] = stmt();
-  code[i] = NULL;
+  vec_push(p->variables, dummy);
+  return p;
 }
 
 Program *parse(Vector *in) {
-  Program *prog = malloc(sizeof(Program));
+  tokens = in;
+  pos = 0;
+
+  prog = new_program();
+  locals = prog->variables;
+
+  while (!at_eof()) toplevel();
+
   return prog;
 }
