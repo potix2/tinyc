@@ -6,13 +6,15 @@ char *user_input;
 Vector *tokens;
 int current;
 // ローカル変数
-LVar *locals;
+Vector *locals;
 
 // 変数を名前で検索する。見つからなかった場合はNULLを返す。
 static LVar *find_lvar(Token *tok) {
-  for (LVar *var = locals; var; var = var->next)
+  for (int i = 0; i < locals->len; i++) {
+    LVar *var = locals->data[i];
     if (var->len == tok->len && !memcmp(tok->str, var->name, var->len))
       return var;
+  }
   return NULL;
 }
 
@@ -128,12 +130,11 @@ static Node *primary() {
               tok->str);
 #endif
       lvar = calloc(1, sizeof(LVar));
-      lvar->next = locals;
       lvar->name = tok->str;
       lvar->len = tok->len;
-      lvar->offset = locals->offset + 8;
+      lvar->offset = ((LVar *)vec_last(locals))->offset + 8;
       node->offset = lvar->offset;
-      locals = lvar;
+      vec_push(locals, lvar);
 #ifdef DEBUG
       fprintf(stderr, "after allocation\n");
 #endif
@@ -283,12 +284,14 @@ Node *program(Vector *in) {
   tokens = in;
   current = 0;
 
+  // TODO: remove dummy variable if it's unnecessary
   // set dummy locals
-  locals = calloc(1, sizeof(LVar));
-  locals->name = "";
-  locals->len = 0;
-  locals->next = NULL;
-  locals->offset = 0;
+  locals = new_vec();
+  LVar *dummy = calloc(1, sizeof(LVar));
+  dummy->name = "";
+  dummy->len = 0;
+  dummy->offset = 0;
+  vec_push(locals, dummy);
 
   int i = 0;
   while (!at_eof()) code[i++] = stmt();

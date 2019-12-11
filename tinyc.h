@@ -98,7 +98,6 @@ typedef struct Node {
 typedef struct LVar LVar;
 
 typedef struct LVar {
-  LVar *next;  // 次の変数かNULL
   char *name;  // 変数の名前
   int len;     // 名前の長さ
   int offset;  // RBPからのオフセット
