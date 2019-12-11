@@ -155,11 +155,10 @@ void gen_program(Program *prog) {
   printf("main:\n");
 
   // プロローグ
-  // 変数26個分の領域を確保する
-  // TODO: parse結果から確保された変数の数を取得してスタックメモリを確保する
+  // 変数の領域を確保する
   printf("  push rbp\n");
   printf("  mov rbp, rsp\n");
-  printf("  sub rsp, 208\n");
+  printf("  sub rsp, %d\n", prog->variables->len * 8);
 
   for (int i = 0; i < prog->code->len; i++) {
     gen(prog->code->data[i]);
