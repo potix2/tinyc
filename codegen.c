@@ -31,10 +31,14 @@ static void gen(Node *node) {
       return;
 
     case ND_BLOCK:
-      for( int i = 0; i < node->stmts->len; i++) {
+      for (int i = 0; i < node->stmts->len; i++) {
         gen(node->stmts->data[i]);
         printf("  pop rax\n");
       }
+      return;
+
+    case ND_APPLY:
+      printf("  call %s\n", node->name);
       return;
 
     case ND_IF:
@@ -99,6 +103,7 @@ static void gen(Node *node) {
       printf("  mov rax, [rax]\n");
       printf("  push rax\n");
       return;
+
     case ND_ASSIGN:
       gen_lval(node->lhs);
       gen(node->rhs);

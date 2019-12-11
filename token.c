@@ -33,8 +33,9 @@ static Token *new_ident_token(char **p) {
   int len = 0;
   while (begin[len] && is_alnum(begin[len])) len++;
 
+  char *name = strndup(begin, len);
   *p += len;
-  return new_token(TK_IDENT, begin, len);
+  return new_token(TK_IDENT, name, len);
 }
 
 // 入力文字列pをトークナイズしてそれを返す

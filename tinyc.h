@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <assert.h>
 #include <ctype.h>
 #include <stdarg.h>
@@ -75,6 +76,7 @@ typedef enum {
   ND_WHILE,      // while
   ND_FOR,        // for
   ND_BLOCK,      // { }
+  ND_APPLY,      // call
 } NodeKind;
 
 typedef struct Node Node;
@@ -84,6 +86,7 @@ typedef struct Node {
   Node *rhs;      // 右辺
   int val;        // kindがND_NUMの場合のみ使う
   int offset;     // kindがND_LVARの場合のみ使う
+  char *name;     // kindがND_APPLYの時に使う
 
   // if ( cond ) then "else" els
   // while( cond ) body

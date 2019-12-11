@@ -108,7 +108,37 @@ static Node *new_for_node(Node *init, Node *cond, Node *inc, Node *body) {
 
 static Node *expr();
 
-// primary = num | ident | "(" expr ")"
+static Node *apply(Token *tok) {
+  // 関数呼出として処理
+  Node *node = calloc(1, sizeof(Node));
+  node->kind = ND_APPLY;
+  node->name = tok->str;
+  consume(')');
+  return node;
+}
+
+// ローカル変数への参照
+static Node *local_variable(Token *tok) {
+  Node *node = calloc(1, sizeof(Node));
+  node->kind = ND_LVAR;
+
+  LVar *lvar = find_lvar(tok);
+  if (lvar) {
+    node->offset = lvar->offset;
+  } else {
+    lvar = calloc(1, sizeof(LVar));
+    lvar->name = tok->str;
+    lvar->len = tok->len;
+    lvar->offset = ((LVar *)vec_last(locals))->offset + 8;
+    node->offset = lvar->offset;
+    vec_push(locals, lvar);
+  }
+  return node;
+}
+
+// primary = num
+// | ident ("(" ")")?
+// | "(" expr ")"
 static Node *primary() {
   // 次のトークンが"("なら、"(" expr ")" のはず
   if (consume('(')) {
@@ -119,28 +149,11 @@ static Node *primary() {
 
   Token *tok = consume_ident();
   if (tok) {
-    Node *node = calloc(1, sizeof(Node));
-    node->kind = ND_LVAR;
-
-    LVar *lvar = find_lvar(tok);
-    if (lvar) {
-      node->offset = lvar->offset;
-    } else {
-#ifdef DEBUG
-      fprintf(stderr, "before allocating local variable: %.*s\n", tok->len,
-              tok->str);
-#endif
-      lvar = calloc(1, sizeof(LVar));
-      lvar->name = tok->str;
-      lvar->len = tok->len;
-      lvar->offset = ((LVar *)vec_last(locals))->offset + 8;
-      node->offset = lvar->offset;
-      vec_push(locals, lvar);
-#ifdef DEBUG
-      fprintf(stderr, "after allocation\n");
-#endif
+    if (consume('(')) {
+      return apply(tok);
     }
-    return node;
+
+    return local_variable(tok);
   }
 
   // そうでなければ数値のはず
@@ -281,8 +294,7 @@ static Node *stmt() {
     node = calloc(1, sizeof(Node));
     node->kind = ND_BLOCK;
     node->stmts = new_vec();
-    while(!consume('}'))
-      vec_push(node->stmts, stmt());
+    while (!consume('}')) vec_push(node->stmts, stmt());
 
     return node;
   }
