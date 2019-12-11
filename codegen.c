@@ -147,3 +147,5 @@ void gen(Node *node) {
 
   printf("  push rax\n");
 }
+
+void gen_program(Program *prog) {}

@@ -104,11 +104,18 @@ typedef struct LVar {
   int offset;  // RBPからのオフセット
 } LVar;
 
+typedef struct Program {
+  Vector *variables;
+  Vector *code;
+} Program;
+
 // 入力プログラム
 extern Node *code[100];
 
 Vector *tokenize(char *p);
+Program *parse(Vector *tokens);
 Node *program(Vector *tokens);
+void gen_program(Program *prog);
 void gen(Node *node);
 
 // debug.c

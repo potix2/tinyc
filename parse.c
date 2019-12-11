@@ -294,3 +294,8 @@ Node *program(Vector *in) {
   while (!at_eof()) code[i++] = stmt();
   code[i] = NULL;
 }
+
+Program *parse(Vector *in) {
+  Program *prog = malloc(sizeof(Program));
+  return prog;
+}
