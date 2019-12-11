@@ -108,12 +108,19 @@ static Node *new_for_node(Node *init, Node *cond, Node *inc, Node *body) {
 
 static Node *expr();
 
+// 関数呼出
 static Node *apply(Token *tok) {
-  // 関数呼出として処理
   Node *node = calloc(1, sizeof(Node));
   node->kind = ND_APPLY;
   node->name = tok->str;
-  consume(')');
+  node->args = new_vec();
+  if (!consume(')')) {
+    // func_args = expr (",", expr)*
+    vec_push(node->args, expr());
+    while (consume(',')) vec_push(node->args, expr());
+
+    consume(')');
+  }
   return node;
 }
 
@@ -137,7 +144,7 @@ static Node *local_variable(Token *tok) {
 }
 
 // primary = num
-// | ident ("(" ")")?
+// | ident ("(" func_args? ")")?
 // | "(" expr ")"
 static Node *primary() {
   // 次のトークンが"("なら、"(" expr ")" のはず

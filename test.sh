@@ -79,5 +79,6 @@ try 32 "a = 1; for(b = 0; b < 5; b = b + 1) a = a * 2; return a;"
 try 45 "i = 0; x = 0; for(; i < 10; i = i + 1) x = x + i; return x;"
 try 100 "i = 0; for(;;) if ( i < 10 ) i = i + 1; else return 100;"
 try 20 "a = 1; b = 1; if ( 1 ) { a = 10; b = 20; } else { a = 0; b = 0; } return b;"
-try_funcall 0 "foo();"
+try_funcall 0 "foo(); return 0;"
+try_funcall 13 "return bar(2, 3);"
 echo OK

@@ -86,7 +86,8 @@ typedef struct Node {
   Node *rhs;      // 右辺
   int val;        // kindがND_NUMの場合のみ使う
   int offset;     // kindがND_LVARの場合のみ使う
-  char *name;     // kindがND_APPLYの時に使う
+  char *name;     // 関数名
+  Vector *args;   // 関数の引数リスト
 
   // if ( cond ) then "else" els
   // while( cond ) body

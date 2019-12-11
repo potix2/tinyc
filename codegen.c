@@ -1,9 +1,10 @@
 #include "tinyc.h"
 
-static int _label_counter = 0;
+static void gen(Node *node);
 static char *gen_label(char *prefix) {
+  static int cnt = 0;
   char *label = malloc(strlen(prefix) + 7);
-  snprintf(label, strlen(prefix) + 7, ".L%s%04d", prefix, _label_counter++);
+  snprintf(label, strlen(prefix) + 7, ".L%s%04d", prefix, cnt++);
   return label;
 }
 
@@ -14,6 +15,22 @@ static void gen_lval(Node *node) {
 
   printf("  mov rax, rbp\n");
   printf("  sub rax, %d\n", node->offset);
+  printf("  push rax\n");
+}
+
+// x86_64 Calling Conventionに従って関数呼び出しコードを生成する
+// SEE: https://wiki.osdev.org/System_V_ABI
+static void gen_apply(Node *node) {
+  assert(node->args->len <= 6);
+
+  static char *regs[6] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+  int i = 0;
+  for (i = 0; i < node->args->len; i++) gen(node->args->data[i]);
+  for (; i > 0; i--) {
+    printf("  pop rax\n");
+    printf("  mov %s, rax\n", regs[i - 1]);
+  }
+  printf("  call %s\n", node->name);
   printf("  push rax\n");
 }
 
@@ -38,7 +55,10 @@ static void gen(Node *node) {
       return;
 
     case ND_APPLY:
-      printf("  call %s\n", node->name);
+      if (node->args->len > 6) {
+        error("Not supported for calling funcation with more than 6 arguments");
+      }
+      gen_apply(node);
       return;
 
     case ND_IF:
