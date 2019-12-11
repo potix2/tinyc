@@ -39,6 +39,9 @@ static void gen(Node *node) {
   char *l2 = NULL;
 
   switch (node->kind) {
+    case ND_FUNC:
+      return;
+
     case ND_RETURN:
       gen(node->lhs);
       printf("  pop rax\n");

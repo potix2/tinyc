@@ -77,6 +77,7 @@ typedef enum {
   ND_FOR,        // for
   ND_BLOCK,      // { }
   ND_APPLY,      // call
+  ND_FUNC,       // 関数定義
 } NodeKind;
 
 typedef struct Node Node;

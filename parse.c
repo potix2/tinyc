@@ -311,7 +311,37 @@ static Node *stmt() {
   return node;
 }
 
-static void toplevel() { vec_push(prog->code, stmt()); }
+// block = "{" stmt* "}"
+// params = param ("," param)*
+// func_decl = ident "(" params? ")" block
+static Node *func_decl() {
+  Token *ident = consume_ident();
+
+  Node *node = calloc(1, sizeof(Node));
+  node->kind = ND_FUNC;
+  node->name = ident->str;
+  node->args = new_vec();
+  node->stmts = new_vec();
+
+  consume('(');
+  if (!consume(')')) {
+    // params
+    Token *param = consume_ident();
+    vec_push(node->args, param->str);
+
+    while (consume(',')) {
+      param = consume_ident();
+      vec_push(node->args, param->str);
+    }
+  }
+  consume(')');
+  consume('{');
+  while (!consume('}')) vec_push(node->stmts, stmt());
+  return node;
+}
+
+// toplevel = func_decl+
+static void toplevel() { vec_push(prog->code, func_decl()); }
 
 static Program *new_program() {
   Program *p = malloc(sizeof(Program));
